@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import requests  # to make requests to spotify api
 import os  # for os.getenv
 import webbrowser  # to open authorization page
@@ -68,7 +69,7 @@ def get_authorization_code() -> str:
 
     redirected_url: str = input(
         'Enter the redirected url \
-                (its fine if it says localhost failed to connect): ')
+(its fine if it says localhost failed to connect): ')
     authorization_code: str = redirected_url.split('=')[1]
 
     return authorization_code

@@ -35,7 +35,7 @@ Image max dimensions(from spotify api): 640x300 and it scales to fit so the qual
 - Give it a simple name, a description and add a redirect uri of `http://localhost:8888/callback/` (even slash is important for the uri!),
 - Agree to their terms and click `Save`,
 - Navigate to the settings page (top right - `Settings button`) of the project and in the `Basic information` tab copy `client id` and `client secret` (in order for the secret to appear click the purple `view secret` link),
-- Create a `.env` file in the root of the cloned spotify-current-album-art-set-wallpaper repo and write in this format:
+- Create a `.env` file in the root of the cloned spotify-current-art-wallpaper repo and write in this format:
 ```bash
 SPOTIFY_CLIENT_ID=PASTE_YOUR_SPOTIFY_CLIENT_ID_HERE
 SPOTIFY_CLIENT_SECRET=PASTE_YOUR_SPOTIFY_CLIENT_SECRET_HERE

@@ -22,12 +22,12 @@ SPOTIFY_CLIENT_SECRET: str = os.getenv('SPOTIFY_CLIENT_SECRET')
 SPOTIFY_REDIRECT_URI: str = 'http://localhost:8888/callback/'
 OUTPUT_FILE: str = 'wallpaper.jpg'
 CACHE_ACCESS_TOKEN_FILE_PATH: str = '.access_token'
-REFRESH_TIME: int = 1000
+REFRESH_TIME: int = 0.1  # in seconds
 
 
 # author: imdadahad@github.com
 def get_current_track(access_token: str) -> dict:
-    response: Response = requests.get(
+    response: requests.Response = requests.get(
         SPOTIFY_GET_CURRENT_TRACK_URL,
         headers={
             'Authorization': f'Bearer {access_token}'
@@ -75,7 +75,7 @@ def get_authorization_code() -> str:
 
 
 def get_access_token(authorization_code: str) -> str:
-    response: Response = requests.post(
+    response: requests.Response = requests.post(
         SPOTIFY_GET_ACCESS_TOKEN_URL,
         {
             'grant_type': 'authorization_code',
@@ -89,7 +89,7 @@ def get_access_token(authorization_code: str) -> str:
 
 
 def download_image(url: str, output_file: str) -> None:
-    response: Response = requests.get(url, stream=True)
+    response: requests.Response = requests.get(url, stream=True)
 
     with open(output_file, 'wb') as f:
         response.raw.decode_content = True
@@ -101,7 +101,7 @@ def set_windows_wallpaper(image_absolute_path: str) -> None:
 
 
 def set_linux_wallpaper(image_absolute_path: str) -> None:
-    subprocess.run(['feh', '--bg-scale', absolute_file_path])
+    subprocess.run(['feh', '--bg-scale', image_absolute_path])
 
 
 def get_absolute_path_of_cwd_file(cwd_file_path: str) -> str:
@@ -109,9 +109,9 @@ def get_absolute_path_of_cwd_file(cwd_file_path: str) -> str:
 
 
 def set_wallpaper(absolute_file_path: str) -> None:
-    if platform == "linux" or platform == "linux2":
+    if sys.platform == "linux" or sys.platform == "linux2":
         set_linux_wallpaper(absolute_file_path)
-    elif platform == "win32":
+    elif sys.platform == "win32":
         set_windows_wallpaper(absolute_file_path)
 
 

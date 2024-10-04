@@ -136,12 +136,14 @@ def main() -> None:
     track: dict = get_current_track(token)
     download_image(track['image'], OUTPUT_FILE)
     set_wallpaper(get_absolute_path_of_cwd_file(OUTPUT_FILE))
+    print(f"current song: {track['track_name']}")
 
     while True:
         new_track: dict = get_current_track(token)
 
         if track['id'] != new_track['id']:
             track = new_track
+            print(f"current song: {track['track_name']}")
             download_image(track['image'], OUTPUT_FILE)
             set_wallpaper(get_absolute_path_of_cwd_file(OUTPUT_FILE))
 

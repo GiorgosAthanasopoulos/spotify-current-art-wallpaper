@@ -1,21 +1,24 @@
-import requests # to make requests to spotify api
-import os # for os.getenv
-import webbrowser # to open authorization page
-import shutil # to save image stream to file
-import ctypes # to apply wallpaper on windows
-import time # for sleep
-import subprocess # to set wallpaper on linux
-from dotenv import load_dotenv # to load spotify client id and secret
+import requests  # to make requests to spotify api
+import os  # for os.getenv
+import webbrowser  # to open authorization page
+import shutil  # to save image stream to file
+import ctypes  # to apply wallpaper on windows
+import time  # for sleep
+import subprocess  # to set wallpaper on linux
+import sys  # to check current operating system
+from dotenv import load_dotenv  # to load spotify client id and secret
 
 
 load_dotenv()
 
 
-SPOTIFY_GET_CURRENT_TRACK_URL: str = 'https://api.spotify.com/v1/me/player/currently-playing'
-SPOTIFY_GET_AUTHORIZATION_CODE_URL: str = 'https://accounts.spotify.com/authorize'
+SPOTIFY_GET_CURRENT_TRACK_URL: str = \
+    'https://api.spotify.com/v1/me/player/currently-playing'
+SPOTIFY_GET_AUTHORIZATION_CODE_URL: str = \
+    'https://accounts.spotify.com/authorize'
 SPOTIFY_GET_ACCESS_TOKEN_URL: str = 'https://accounts.spotify.com/api/token'
 SPOTIFY_CLIENT_ID: str = os.getenv('SPOTIFY_CLIENT_ID')
-SPOTIFY_CLIENT_SECRET:str = os.getenv('SPOTIFY_CLIENT_SECRET')
+SPOTIFY_CLIENT_SECRET: str = os.getenv('SPOTIFY_CLIENT_SECRET')
 SPOTIFY_REDIRECT_URI: str = 'http://localhost:8888/callback/'
 OUTPUT_FILE: str = 'wallpaper.jpg'
 CACHE_ACCESS_TOKEN_FILE_PATH: str = '.access_token'
@@ -43,10 +46,10 @@ def get_current_track(access_token: str) -> dict:
     image: str = json_resp['item']['album']['images'][0]['url']
 
     current_track_info: dict = {
-    	'id': track_id,
-    	'track_name': track_name,
-    	'artists': artist_names,
-    	'link': link,
+        'id': track_id,
+        'track_name': track_name,
+        'artists': artist_names,
+        'link': link,
         'image': image
     }
 
@@ -54,14 +57,18 @@ def get_current_track(access_token: str) -> dict:
 
 
 def get_authorization_code() -> str:
-    response: Response = requests.get(
-        f'{SPOTIFY_GET_AUTHORIZATION_CODE_URL}?client_id={SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri={SPOTIFY_REDIRECT_URI}&scope=user-read-currently-playing'
+    response: requests.Response = requests.get(
+        f'{SPOTIFY_GET_AUTHORIZATION_CODE_URL}?client_id={SPOTIFY_CLIENT_ID}\
+                &response_type=code&redirect_uri={
+            SPOTIFY_REDIRECT_URI}&scope=user-read-currently-playing'
     )
     auth_url: str = response.url
 
     webbrowser.open(auth_url)
 
-    redirected_url: str = input('Enter the redirected url(its fine if it says localhost failed to connect): ')
+    redirected_url: str = input(
+        'Enter the redirected url \
+                (its fine if it says localhost failed to connect): ')
     authorization_code: str = redirected_url.split('=')[1]
 
     return authorization_code
@@ -123,7 +130,8 @@ def get_cache_or_fetch_and_cache_access_token(cache_file_path: str) -> str:
 
 
 def main() -> None:
-    token: str = get_cache_or_fetch_and_cache_access_token(CACHE_ACCESS_TOKEN_FILE_PATH)
+    token: str = get_cache_or_fetch_and_cache_access_token(
+        CACHE_ACCESS_TOKEN_FILE_PATH)
 
     track: dict = get_current_track(token)
     download_image(track['image'], OUTPUT_FILE)

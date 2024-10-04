@@ -24,6 +24,7 @@ OUTPUT_FILE: str = 'wallpaper.jpg'
 CACHE_ACCESS_TOKEN_FILE_PATH: str = '.access_token'
 REFRESH_TIME: int = 0.1  # in seconds
 SCREEN_SIZE: tuple = (1920, 1080)
+LINUX_SET_WALLPAPER_CMD: list = ['feh', '--bg-scale'] # we assume that the image path is the last thing we need to pass the cmd
 
 
 # author: imdadahad@github.com
@@ -39,11 +40,8 @@ def get_current_track(access_token: str) -> dict:
     track_id: str = json_resp['item']['id']
     track_name: str = json_resp['item']['name']
     artists: [str] = [artist for artist in json_resp['item']['artists']]
-
     link: str = json_resp['item']['external_urls']['spotify']
-
     artist_names: str = ', '.join([artist['name'] for artist in artists])
-
     image: str = json_resp['item']['album']['images'][0]['url']
 
     current_track_info: dict = {
@@ -59,8 +57,8 @@ def get_current_track(access_token: str) -> dict:
 
 def get_authorization_code() -> str:
     response: requests.Response = requests.get(f'{SPOTIFY_GET_AUTHORIZATION_CODE_URL}?client_id={SPOTIFY_CLIENT_ID}&response_type=code&scope=user-read-currently-playing&redirect_uri={SPOTIFY_REDIRECT_URI}')
-    auth_url: str = response.url
 
+    auth_url: str = response.url
     webbrowser.open(auth_url)
 
     redirected_url: str = input('Enter the redirected url (its fine if it says localhost failed to connect): ')
@@ -96,10 +94,10 @@ def set_windows_wallpaper(image_absolute_path: str) -> None:
 
 
 def set_linux_wallpaper(image_absolute_path: str) -> None:
-    subprocess.run(['feh', '--bg-scale', image_absolute_path])
+    subprocess.run(LINUX_SET_WALLPAPER_CMD.append(image_absolute_path))
 
 
-def get_absolute_path_of_cwd_file(cwd_file_path: str) -> str:
+def get_absolute_path_of_script_directory_file(cwd_file_path: str) -> str:
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), cwd_file_path)
 
 
@@ -108,6 +106,9 @@ def set_wallpaper(absolute_file_path: str) -> None:
         set_linux_wallpaper(absolute_file_path)
     elif sys.platform == "win32":
         set_windows_wallpaper(absolute_file_path)
+    elif sys.platform == "darwin":
+        # too broke to have a mac :'(
+        pass
 
 
 def get_cache_or_fetch_and_cache_access_token(cache_file_path: str) -> str:
@@ -137,9 +138,8 @@ def download_resize_and_set_wallpaper(image_url: str, size: tuple, output_file: 
 
 
 def main() -> None:
-    token: str = get_cache_or_fetch_and_cache_access_token(
-        CACHE_ACCESS_TOKEN_FILE_PATH)
-    output_file: str = get_absolute_path_of_cwd_file(OUTPUT_FILE)
+    token: str = get_cache_or_fetch_and_cache_access_token(CACHE_ACCESS_TOKEN_FILE_PATH)
+    output_file: str = get_absolute_path_of_script_directory_file(OUTPUT_FILE)
 
     track: dict = get_current_track(token)
     print(f"current song: {track['track_name']}")

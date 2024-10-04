@@ -21,6 +21,7 @@ SPOTIFY_CLIENT_ID: str = os.getenv('SPOTIFY_CLIENT_ID')
 SPOTIFY_CLIENT_SECRET: str = os.getenv('SPOTIFY_CLIENT_SECRET')
 SPOTIFY_REDIRECT_URI: str = 'http://localhost:8888/callback/'
 OUTPUT_FILE: str = 'wallpaper.jpg'
+CACHE_ACCESS_TOKEN: bool = False # if you get an error: access token is expired you need to delete CACHE_ACCESS_TOKEN_FILE_PATH and rerun to retrieve a new valid access token
 CACHE_ACCESS_TOKEN_FILE_PATH: str = '.access_token'
 REFRESH_TIME: int = 0.1  # in seconds
 SCREEN_SIZE: tuple = (1920, 1080)
@@ -57,6 +58,7 @@ def get_current_track(access_token: str) -> dict:
 
 def get_authorization_code() -> str:
     response: requests.Response = requests.get(f'{SPOTIFY_GET_AUTHORIZATION_CODE_URL}?client_id={SPOTIFY_CLIENT_ID}&response_type=code&scope=user-read-currently-playing&redirect_uri={SPOTIFY_REDIRECT_URI}')
+    print('get_authorization_code response:', response.text)
 
     auth_url: str = response.url
     webbrowser.open(auth_url)
@@ -77,6 +79,7 @@ def get_access_token(authorization_code: str) -> str:
             'client_id': SPOTIFY_CLIENT_ID,
             'client_secret': SPOTIFY_CLIENT_SECRET
         })
+    print('get_access_token response:', response.text)
 
     return response.json()['access_token']
 
@@ -114,7 +117,7 @@ def set_wallpaper(absolute_file_path: str) -> None:
 def get_cache_or_fetch_and_cache_access_token(cache_file_path: str) -> str:
     token: str = ''
 
-    if os.path.isfile(cache_file_path):
+    if os.path.isfile(cache_file_path) and CACHE_ACCESS_TOKEN:
         with open(cache_file_path, 'r') as f:
             token = f.read()
     else:

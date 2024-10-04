@@ -6,6 +6,9 @@ Set current album art from spotify as wallpaper (linux and windows). If you like
 
 - Linux
   - `feh` (in `main.py` change `set_linux_wallpaper` to a custom command if you dont have `feh`/dont want to use it)
+  - `python`/`pip` (🤓well akshually `python3` but `python` should most of the times alias to `python3` in any recent distros)
+- Windows
+  - `python`/`pip`
 
 ## Warning
 

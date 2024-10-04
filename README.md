@@ -1,4 +1,4 @@
-# spotify-current-album-art-set-wallpaper
+# spotify-current-art-wallpaper
 
 Set current album art from spotify as wallpaper (linux and windows). If you like this crap that I call software please leave it a star :).
 
